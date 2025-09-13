@@ -1,3 +1,7 @@
+from PyQt6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget
+
+from controllers.clientes_controller import agregar_cliente
+from controllers.presupuesto_controller import agregar_presupuesto
 from views.tarjetas_view import ConfiguracionView
 
 

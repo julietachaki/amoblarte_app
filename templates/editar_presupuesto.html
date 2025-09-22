@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Presupuesto - Amoblarte{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-edit"></i> Editar Presupuesto: {{ presupuesto.numero_presupuesto }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="cliente_id" class="form-label">Cliente *</label>
+                            <select class="form-select" id="cliente_id" name="cliente_id" required>
+                                {% for cliente in clientes %}
+                                <option value="{{ cliente.id }}" {% if cliente.id == presupuesto.cliente_id %}selected{% endif %}>
+                                    {{ cliente.nombre_completo }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="imagen" class="form-label">Imagen</label>
+                            <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                            {% if presupuesto.imagen %}
+                            <div class="form-text">
+                                <strong>Imagen actual:</strong> {{ presupuesto.imagen }}
+                                <br><small class="text-muted">Selecciona una nueva imagen para reemplazarla</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="4">{{ presupuesto.descripcion or '' }}</textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="precio_materiales" class="form-label">Precio Materiales ($)</label>
+                            <input type="number" class="form-control" id="precio_materiales" name="precio_materiales" 
+                                   step="0.01" min="0" value="{{ presupuesto.precio_materiales }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="precio_mano_obra" class="form-label">Precio Mano de Obra ($)</label>
+                            <input type="number" class="form-control" id="precio_mano_obra" name="precio_mano_obra" 
+                                   step="0.01" min="0" value="{{ presupuesto.precio_mano_obra }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="incluye_tarjeta" name="incluye_tarjeta" value="Sí"
+                                   {% if presupuesto.incluye_tarjeta == "Sí" %}checked{% endif %}>
+                            <label class="form-check-label" for="incluye_tarjeta">
+                                Incluir precio con tarjeta
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3" id="precio_tarjeta_container" 
+                         style="display: {% if presupuesto.incluye_tarjeta == 'Sí' %}block{% else %}none{% endif %};">
+                        <label for="precio_tarjeta" class="form-label">Precio con Tarjeta ($)</label>
+                        <input type="number" class="form-control" id="precio_tarjeta" name="precio_tarjeta" 
+                               step="0.01" min="0" value="{{ presupuesto.precio_tarjeta }}">
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Información:</strong> Al guardar los cambios se regenerará automáticamente el PDF 
+                        con la nueva información.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('presupuestos') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Actualizar Presupuesto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('incluye_tarjeta').addEventListener('change', function() {
+    const container = document.getElementById('precio_tarjeta_container');
+    const input = document.getElementById('precio_tarjeta');
+    
+    if (this.checked) {
+        container.style.display = 'block';
+        input.required = true;
+    } else {
+        container.style.display = 'none';
+        input.required = false;
+        input.value = 0;
+    }
+});
+
+// Calcular total en tiempo real
+function calcularTotal() {
+    const materiales = parseFloat(document.getElementById('precio_materiales').value) || 0;
+    const manoObra = parseFloat(document.getElementById('precio_mano_obra').value) || 0;
+    const tarjeta = parseFloat(document.getElementById('precio_tarjeta').value) || 0;
+    const incluyeTarjeta = document.getElementById('incluye_tarjeta').checked;
+    
+    const subtotal = materiales + manoObra;
+    const total = incluyeTarjeta ? subtotal + tarjeta : subtotal;
+    
+    // Mostrar total (opcional)
+    console.log('Total:', total);
+}
+
+document.getElementById('precio_materiales').addEventListener('input', calcularTotal);
+document.getElementById('precio_mano_obra').addEventListener('input', calcularTotal);
+document.getElementById('precio_tarjeta').addEventListener('input', calcularTotal);
+document.getElementById('incluye_tarjeta').addEventListener('change', calcularTotal);
+</script>
+{% endblock %}

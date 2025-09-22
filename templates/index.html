@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Amoblarte{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+            <h1 class="display-4">Bienvenido a Amoblarte</h1>
+            <p class="lead">Sistema de gestión de clientes y presupuestos</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Gestión de Clientes</h5>
+                <p class="card-text">Administra la información de tus clientes: nombre, apellido, celular y dirección.</p>
+                <a href="{{ url_for('clientes') }}" class="btn btn-primary">
+                    <i class="fas fa-users"></i> Ver Clientes
+                </a>
+                <a href="{{ url_for('nuevo_cliente') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-plus"></i> Nuevo Cliente
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-file-invoice-dollar fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Gestión de Presupuestos</h5>
+                <p class="card-text">Crea y gestiona presupuestos con descripción, imágenes, precios y generación automática de PDF.</p>
+                <a href="{{ url_for('presupuestos') }}" class="btn btn-success">
+                    <i class="fas fa-file-invoice-dollar"></i> Ver Presupuestos
+                </a>
+                <a href="{{ url_for('nuevo_presupuesto') }}" class="btn btn-outline-success">
+                    <i class="fas fa-plus"></i> Nuevo Presupuesto
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Características del Sistema</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-check text-success"></i> Gestión Completa</h6>
+                        <p>Administra clientes y presupuestos de forma integrada.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-file-pdf text-danger"></i> PDF Automático</h6>
+                        <p>Generación automática de PDFs con toda la información del presupuesto.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6><i class="fas fa-credit-card text-info"></i> Precios con Tarjeta</h6>
+                        <p>Opción para incluir precios adicionales por pago con tarjeta.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

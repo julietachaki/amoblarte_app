@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Presupuestos - Amoblarte{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-file-invoice-dollar"></i> Gestión de Presupuestos</h2>
+    <a href="{{ url_for('nuevo_presupuesto') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Nuevo Presupuesto
+    </a>
+</div>
+
+{% if presupuestos %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Cliente</th>
+                        <th>Descripción</th>
+                        <th>Total</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for presupuesto in presupuestos %}
+                    <tr>
+                        <td>
+                            <strong>{{ presupuesto.numero_presupuesto }}</strong>
+                        </td>
+                        <td>{{ presupuesto.cliente.nombre_completo }}</td>
+                        <td>
+                            {% if presupuesto.descripcion %}
+                                {{ presupuesto.descripcion[:50] }}{% if presupuesto.descripcion|length > 50 %}...{% endif %}
+                            {% else %}
+                                <span class="text-muted">Sin descripción</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>${{ "%.2f"|format(presupuesto.total_final) }}</strong>
+                            {% if presupuesto.incluye_tarjeta == "Sí" %}
+                                <br><small class="text-success">Incluye tarjeta</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ presupuesto.fecha_creacion.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('editar_presupuesto', id=presupuesto.id) }}" 
+                                   class="btn btn-sm btn-outline-primary" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{{ url_for('descargar_pdf', id=presupuesto.id) }}" 
+                                   class="btn btn-sm btn-outline-success" title="Descargar PDF">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        onclick="confirmarEliminacion({{ presupuesto.id }}, '{{ presupuesto.numero_presupuesto }}')"
+                                        title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-file-invoice-dollar fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No hay presupuestos registrados</h5>
+        <p class="text-muted">Comienza creando tu primer presupuesto.</p>
+        <a href="{{ url_for('nuevo_presupuesto') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Crear Primer Presupuesto
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Formulario oculto para eliminación -->
+<form id="formEliminar" method="POST" style="display: none;">
+    <input type="hidden" name="_method" value="DELETE">
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmarEliminacion(id, numero) {
+    if (confirm(`¿Estás seguro de que deseas eliminar el presupuesto "${numero}"?\n\nEsta acción no se puede deshacer.`)) {
+        const form = document.getElementById('formEliminar');
+        form.action = `/presupuestos/${id}/eliminar`;
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

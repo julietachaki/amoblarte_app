@@ -1,25 +1,23 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Integer, String
-from sqlalchemy.orm import relationship
+from extensions import db
 
 
-class Cliente:
+class Cliente(db.Model):
     __tablename__ = "clientes"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String(100), nullable=False)
-    apellido = Column(String(100), nullable=False)
-    celular = Column(String(20), nullable=False)
-    direccion = Column(String(200), nullable=False)
-    fecha_creacion = Column(DateTime, default=datetime.utcnow)
-    
-    # Relación con presupuestos
-    presupuestos = relationship("Presupuesto", back_populates="cliente")
-    
+
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    apellido = db.Column(db.String(100), nullable=False)
+    celular = db.Column(db.String(20), nullable=False)
+    direccion = db.Column(db.String(200), nullable=False)
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
+
+    presupuestos = db.relationship("Presupuesto", back_populates="cliente")
+
     def __repr__(self):
         return f"<Cliente {self.nombre} {self.apellido}>"
-    
+
     @property
     def nombre_completo(self):
         return f"{self.nombre} {self.apellido}"

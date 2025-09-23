@@ -53,7 +53,7 @@
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <a href="{{ url_for('descargar_pdf', id=presupuesto.id) }}" 
-                                   class="btn btn-sm btn-outline-success" title="Descargar PDF">
+                                   target="_blank" class="btn btn-sm btn-outline-success" title="Abrir PDF">
                                     <i class="fas fa-file-pdf"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-outline-danger" 
@@ -99,5 +99,24 @@ function confirmarEliminacion(id, numero) {
         form.submit();
     }
 }
+
+// Si venimos de crear/editar un presupuesto, abrir el PDF en una nueva ventana
+(function() {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const pdfId = params.get('pdf_id');
+        if (pdfId) {
+            const pdfUrl = `/presupuestos/${pdfId}/pdf`;
+            window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+            // Limpiar el param sin recargar
+            const url = new URL(window.location.href);
+            url.searchParams.delete('pdf_id');
+            window.history.replaceState({}, document.title, url.toString());
+        }
+    } catch (e) {
+        // noop
+    }
+})();
 </script>
 {% endblock %}
+

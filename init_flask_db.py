@@ -48,3 +48,4 @@ if __name__ == "__main__":
     else:
         print("\n❌ Error al inicializar la base de datos")
         sys.exit(1)
+

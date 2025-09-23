@@ -21,7 +21,7 @@
                                 {% endfor %}
                             </select>
                             <div class="form-text">
-                                <a href="{{ url_for('nuevo_cliente') }}" target="_blank">
+                                <a href="{{ url_for('nuevo_cliente', next=url_for('nuevo_presupuesto')) }}" target="_blank">
                                     <i class="fas fa-plus"></i> Crear nuevo cliente
                                 </a>
                             </div>
@@ -48,6 +48,14 @@
                             <label for="precio_mano_obra" class="form-label">Precio Mano de Obra ($)</label>
                             <input type="number" class="form-control" id="precio_mano_obra" name="precio_mano_obra" 
                                    step="0.01" min="0" value="0">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="descuento_porcentaje" class="form-label">Descuento (%)</label>
+                            <input type="number" class="form-control" id="descuento_porcentaje" name="descuento_porcentaje"
+                                   step="0.01" min="0" max="100" value="0">
                         </div>
                     </div>
                     
@@ -109,9 +117,11 @@ function calcularTotal() {
     const manoObra = parseFloat(document.getElementById('precio_mano_obra').value) || 0;
     const tarjeta = parseFloat(document.getElementById('precio_tarjeta').value) || 0;
     const incluyeTarjeta = document.getElementById('incluye_tarjeta').checked;
+    const descuento = Math.min(100, Math.max(0, parseFloat(document.getElementById('descuento_porcentaje').value) || 0));
     
     const subtotal = materiales + manoObra;
-    const total = incluyeTarjeta ? subtotal + tarjeta : subtotal;
+    const totalContado = subtotal * (1 - descuento/100);
+    const total = incluyeTarjeta ? subtotal + tarjeta : totalContado;
     
     // Mostrar total (opcional)
     console.log('Total:', total);
@@ -123,3 +133,4 @@ document.getElementById('precio_tarjeta').addEventListener('input', calcularTota
 document.getElementById('incluye_tarjeta').addEventListener('change', calcularTotal);
 </script>
 {% endblock %}
+

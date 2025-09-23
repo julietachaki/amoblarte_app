@@ -51,6 +51,17 @@
                                    step="0.01" min="0" value="{{ presupuesto.precio_mano_obra }}">
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="descuento_porcentaje" class="form-label">Descuento (%)</label>
+                            <input type="number" class="form-control" id="descuento_porcentaje" name="descuento_porcentaje"
+                                   step="0.01" min="0" max="100" value="{{ presupuesto.descuento_porcentaje or 0 }}">
+                        </div>
+                        <div class="col-md-6 mb-3 d-flex align-items-end">
+                            <div class="text-muted">Total estimado: <strong id="total_preview">$0.00</strong></div>
+                        </div>
+                    </div>
                     
                     <div class="mb-3">
                         <div class="form-check">
@@ -67,6 +78,18 @@
                         <label for="precio_tarjeta" class="form-label">Precio con Tarjeta ($)</label>
                         <input type="number" class="form-control" id="precio_tarjeta" name="precio_tarjeta" 
                                step="0.01" min="0" value="{{ presupuesto.precio_tarjeta }}">
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label for="cuotas_3" class="form-label">3 cuotas de ($)</label>
+                                <input type="number" class="form-control" id="cuotas_3" name="cuotas_3"
+                                       step="0.01" min="0" value="{{ presupuesto.cuotas_3 or 0 }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cuotas_6" class="form-label">6 cuotas de ($)</label>
+                                <input type="number" class="form-control" id="cuotas_6" name="cuotas_6"
+                                       step="0.01" min="0" value="{{ presupuesto.cuotas_6 or 0 }}">
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="alert alert-info">
@@ -112,17 +135,25 @@ function calcularTotal() {
     const manoObra = parseFloat(document.getElementById('precio_mano_obra').value) || 0;
     const tarjeta = parseFloat(document.getElementById('precio_tarjeta').value) || 0;
     const incluyeTarjeta = document.getElementById('incluye_tarjeta').checked;
+    const descuento = Math.min(100, Math.max(0, parseFloat(document.getElementById('descuento_porcentaje').value) || 0));
     
     const subtotal = materiales + manoObra;
-    const total = incluyeTarjeta ? subtotal + tarjeta : subtotal;
+    const totalContado = subtotal * (1 - descuento/100);
+    const total = incluyeTarjeta ? (subtotal + tarjeta) : totalContado;
     
     // Mostrar total (opcional)
-    console.log('Total:', total);
+    const preview = document.getElementById('total_preview');
+    if (preview) preview.textContent = `$${total.toFixed(2)}`;
 }
 
 document.getElementById('precio_materiales').addEventListener('input', calcularTotal);
 document.getElementById('precio_mano_obra').addEventListener('input', calcularTotal);
 document.getElementById('precio_tarjeta').addEventListener('input', calcularTotal);
 document.getElementById('incluye_tarjeta').addEventListener('change', calcularTotal);
+document.getElementById('descuento_porcentaje').addEventListener('input', calcularTotal);
+
+// inicializar preview al cargar
+calcularTotal();
 </script>
 {% endblock %}
+

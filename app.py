@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import datetime, timedelta
 
 from flask import (Flask, flash, redirect, render_template, request, send_file,
@@ -11,7 +12,10 @@ from services.presupuesto_service import (create_presupuesto,
                                           delete_presupuesto,
                                           update_presupuesto)
 
-app = Flask(__name__)
+app = Flask(__name__,
+    template_folder=os.path.join(getattr(sys, '_MEIPASS', os.path.abspath(".")), 'templates'),
+    static_folder=os.path.join(getattr(sys, '_MEIPASS', os.path.abspath(".")), 'static')
+)
 app.config['SECRET_KEY'] = 'tu_clave_secreta_aqui'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///amoblarte.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -185,9 +189,18 @@ def descargar_pdf(id):
         flash('PDF no encontrado', 'error')
         return redirect(url_for('presupuestos'))
     # keep module-level exports for tests
+import threading
+import webbrowser
+
 from extensions import db as db  # re-export
 from models import Cliente as Cliente
 from models import Presupuesto as Presupuesto
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+def open_browser():
+    webbrowser.open("http://127.0.0.1:5000")
+
+if __name__ == "__main__":
+    threading.Timer(1.0, open_browser).start()
+    app.run()
+

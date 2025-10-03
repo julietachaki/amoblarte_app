@@ -1,4 +1,7 @@
 import os
+from reportlab.platypus import PageBreak
+from PIL import Image as PILImage
+
 
 from flask import current_app as app
 from reportlab.lib import colors
@@ -190,8 +193,39 @@ def generate_pdf(presupuesto):
 
     # Añadir al story
     story.append(full_footer)
+    try:
+        if getattr(presupuesto, 'imagen', None):
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], presupuesto.imagen)
+            if os.path.exists(image_path):
+                # Inserta salto de página
+                story.append(PageBreak())
 
+                # Calcular tamaño máximo disponible respetando márgenes
+                page_width, page_height = letter
+                max_width = page_width - (doc.leftMargin + doc.rightMargin)
+                max_height = page_height - (doc.topMargin + doc.bottomMargin)
+
+                # Leer dimensiones reales de la imagen con Pillow
+                with PILImage.open(image_path) as pil_img:
+                    img_w, img_h = pil_img.size
+
+                # Factor de escala para mantener proporción y encajar en la página
+                scale = min(max_width / float(img_w), max_height / float(img_h))
+                target_w = img_w * scale
+                target_h = img_h * scale
+
+                # Crear imagen de ReportLab y centrarla
+                rl_img = Image(image_path, width=target_w, height=target_h)
+                rl_img.hAlign = 'CENTER'
+
+                # Añadir un pequeño espacio superior para estética
+                story.append(Spacer(1, 12))
+                story.append(rl_img)
+    except Exception:
+        # No interrumpir la generación del PDF si la imagen falla
+        pass
 
     doc.build(story)
+
 
     return pdf_path

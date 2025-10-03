@@ -206,4 +206,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 #
-./static/
+static/
+_static/
+static/uploads/PRE-20250922-81FEE9_amoblarte2.png
+static/uploads/PRE-20250922-81FEE9_am9.png

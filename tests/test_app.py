@@ -44,8 +44,8 @@ class AppTestCase(unittest.TestCase):
     def test_descargar_pdf_inline(self):
         # Ensure PDF can be generated and served inline
         with app.app_context():
-            from app import generar_pdf
-            generar_pdf(self.presupuesto_id)
+            from app import generate_pdf
+            generate_pdf(self.presupuesto_id)
         resp = self.app.get(f'/presupuestos/{self.presupuesto_id}/pdf')
         self.assertEqual(resp.status_code, 200)
         self.assertIn('application/pdf', resp.headers.get('Content-Type', 'application/pdf'))
